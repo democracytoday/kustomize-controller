@@ -21,8 +21,8 @@ import (
 const varsubRegex = "^[_[:alpha:]][_[:alpha:][:digit:]]*$"
 
 // substituteVariables replaces the vars with their values in the specified resource.
-// If a resource is labeled or annotated with
-// 'kustomize.toolkit.fluxcd.io/substitute: disabled' the substitution is skipped.
+// The substitution is performed only if a resource is labeled or annotated with
+// 'kustomize.toolkit.fluxcd.io/substitute: enabled'.
 func substituteVariables(
 	ctx context.Context,
 	kubeClient client.Client,
@@ -35,7 +35,7 @@ func substituteVariables(
 
 	key := fmt.Sprintf("%s/substitute", kustomizev1.GroupVersion.Group)
 
-	if res.GetLabels()[key] == kustomizev1.DisabledValue || res.GetAnnotations()[key] == kustomizev1.DisabledValue {
+	if res.GetLabels()[key] != kustomizev1.EnabledValue && res.GetAnnotations()[key] != kustomizev1.EnabledValue {
 		return nil, nil
 	}
 
